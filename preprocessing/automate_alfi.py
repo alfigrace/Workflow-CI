@@ -77,6 +77,6 @@ def run_preprocessing(input_path, output_dir):
 
 if __name__ == "__main__":
     # Menangkap input path dari terminal/command line
-    input_data = "../heart_disease_raw/heart_disease.csv"
-    output_folder = "./heart_disease_preprocessing"
+    input_data = "heart_disease_raw/heart_disease.csv"
+    output_folder = "heart_disease_preprocessing"
     run_preprocessing(input_data, output_folder)
