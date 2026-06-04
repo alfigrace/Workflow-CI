@@ -1,0 +1,42 @@
+name: MLflow Tracking CI Pipeline Skilled
+
+# Workflow berjalan otomatis saat push ke main/master ATAU bisa dijalankan manual (workflow_dispatch)
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  run-mlflow-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Mengambil kode dan file dari repositori Anda (Versi Terbaru v4)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Menyiapkan environment Python di server GitHub (Versi Python Alfi 3.12.7)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7'
+
+      # 3. Menginstal semua library yang dibutuhkan termasuk MLflow
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn mlflow
+
+      # 4. Menjalankan MLflow Project (mlflow run) sesuai kriteria Skilled
+      - name: Run MLflow Project
+        run: |
+          mlflow run . --no-conda
+
+      # 5. Mengunggah folder mlruns (artefak model) ke GitHub Artifacts
+      - name: Upload MLflow Artifacts to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-artifacts
+          path: mlruns/
