@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Harus pas namanya dengan checklist sistem
+      # 1. Nama step 
       - name: Run actions/checkout@v3
         uses: actions/checkout@v3
 
-      # 2. Menyiapkan Python versi kamu
+      # 2. Set up Python
       - name: Set up Python 3.12.7
         uses: actions/setup-python@v4
         with:
@@ -28,13 +28,13 @@ jobs:
           python --version
           pip --version
 
-      # 4. Install dependencies utama
+      # 4. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy scikit-learn mlflow
+          pip install pandas numpy scikit-learn mlflow matplotlib seaborn
 
-      # 5. Set MLflow Tracking URI (Kita arahkan lokal ke mlruns)
+      # 5. Set MLflow Tracking URI
       - name: Set MLflow Tracking URI
         run: |
           echo "MLFLOW_TRACKING_URI=mlruns" >> $GITHUB_ENV
@@ -42,15 +42,15 @@ jobs:
       # 6. Run mlflow project
       - name: Run mlflow project
         run: |
-          mlflow run . --no-conda
+          mlflow run . --env-manager local
 
-      # 7. Install Python dependencies (Kebutuhan post-run)
+      # 7. Install Python dependencies
       - name: Install Python dependencies
         run: |
           pip install mlflow
 
-      # 8. Upload to GitHub (Sesuai catatan dispensasi penyimpanan yang kamu pilih)
-      - name: Upload to GitHub
+      # 8. Upload to Google Drive
+      - name: Upload to Google Drive
         uses: actions/upload-artifact@v4
         with:
           name: mlflow-artifacts
