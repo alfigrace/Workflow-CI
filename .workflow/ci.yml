@@ -1,0 +1,59 @@
+name: Machine Learning CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  ml_ci_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Run actions/checkout@v3
+      - name: Run actions/checkout@v3
+        uses: actions/checkout@v3
+
+      # 2. Set up Python
+      - name: Set up Python 3.12.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.7'
+
+      # 3. Check Env
+      - name: Check Env
+        run: |
+          python --version
+          pip --version
+
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn mlflow matplotlib seaborn
+
+      # 5. Set MLflow Tracking URI
+      - name: Set MLflow Tracking URI
+        run: |
+          echo "MLFLOW_TRACKING_URI=mlruns" >> $GITHUB_ENV
+
+      # 6. Run mlflow project (PERBAIKAN: Menambahkan env izin khusus file store)
+      - name: Run mlflow project
+        env:
+          MLFLOW_ALLOW_FILE_STORE: "true"
+        run: |
+          mlflow run . --env-manager local
+
+      # 7. Install Python dependencies
+      - name: Install Python dependencies
+        run: |
+          pip install mlflow
+
+      # 8. Upload to Google Drive (Dispensasi menyimpan ke artefak GitHub)
+      - name: Upload to Google Drive
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-artifacts
+          path: mlruns/
